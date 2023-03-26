@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('address2')->nullable();
             $table->string('address_link')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
