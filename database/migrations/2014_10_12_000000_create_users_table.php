@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('address2')->nullable();
             $table->string('address_link')->nullable();
             $table->string('password')->nullable();
+            $table->string('otp')->nullable();
+            $table->tinyInteger('status')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
