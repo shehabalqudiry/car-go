@@ -35,6 +35,7 @@ class AuthController extends Controller
             'phone'     => $request->phone,
             'password'  => $request->password ? Hash::make($request->password) : null,
             'otp'       => otp_generate(),
+            'number'    => "CARGO" . otp_generate(),
         ];
 
         $user = User::create($data);
@@ -60,11 +61,13 @@ class AuthController extends Controller
         }
 
 
-
         $user = User::where('phone', $request->phone)->first();
 
         if (!$user || !$user->otp) {
-                return returnError('ERROR_01', __('Register failed'));
+            return returnError('ERROR_01', __('Register failed'));
+        }
+        if ($user->deleted_at !== null) {
+            return returnError('ERROR_01', __('Account Deleted'));
         }
 
         $user->update([
@@ -79,8 +82,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $rules = [
-            "phone"             => "required|exists:users,phone",
-            "otp"               => "required|string",
+            "phone"             => "required",
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -93,11 +95,38 @@ class AuthController extends Controller
 
         $user = User::where('phone', $request->phone)->first();
 
+
         if (!$user) {
-            return returnError('ERROR_01', __('Register failed'));
+            $data = [
+                'name'      => $request->name,
+                'phone'     => $request->phone,
+                'otp'       => otp_generate(),
+                'number'    => "CARGO" . otp_generate(),
+            ];
+
+            $user = User::create($data);
+
+            $user->wallet()->create([
+                'user_id' => $user->id
+            ]);
+            $user->api_token = $user->createToken($request->ip())->plainTextToken;
+
+            $data_response = new UserResource($user);
+
+            return returnData('data', $data_response, __('Register Done'));
+        }
+        if ($user->deleted_at != null) {
+            return returnError('ERROR_01', __('Account Deleted'));
         }
 
-        if ($user->otp != $request->otp) {
+        if(!$user->wallet){
+            $user->wallet()->create([
+                'user_id' => $user->id
+            ]);
+        }
+
+
+        if ($request->otp and $user->otp != $request->otp) {
             return returnError('ERROR_02', __('OTP failed'));
         }
 

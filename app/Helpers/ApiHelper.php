@@ -3,10 +3,17 @@
 
 namespace App\Helpers;
 
+use App\Models\Setting;
 use App\Models\Shipment;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 function distance($lat1, $lon1, $lat2, $lon2) {
+    // $lat1 = floatval($lat1);
+    // $lon1 = floatval($lon1);
+    // $lat2 = floatval($lat2);
+    // $lon2 = floatval($lon2);
     $radius = 6371; // Earth's radius in kilometers
     $dLat = deg2rad($lat2 - $lat1);
     $dLon = deg2rad($lon2 - $lon1);
@@ -28,7 +35,7 @@ function returnError($errNum, $msg, $status = false)
 function otp_generate()
 {
     $number = mt_rand(1000, 9999);
-    if (User::where('otp', $number)->exists()) {
+    if (User::where('otp', $number)->exists() or User::where('number', "CARGO" . $number)->exists()) {
         otp_generate();
     }
     return $number;
@@ -68,3 +75,9 @@ function returnValidationError($code = "N/A", $validator = null)
 {
     return returnError($code, $validator->errors()->first());
 }
+
+function settings()
+{
+    return Setting::first();
+}
+

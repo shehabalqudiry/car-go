@@ -8,32 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class Shipment extends Model
 {
     use HasFactory;
-    
-    protected $guarded = [];    
-    
+
+    protected $guarded = [];
+    protected $casts = [
+        'delivery_date'=> 'datetime'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function getStatusString()
+    public function coupon()
     {
-        switch ($this->status) {
-            case 0:
-                return __('Under Processing');
-                break;
-            
-            case 1:
-                return __('On the way to you');
-                break;
-            
-            case 2:
-                return __('The shipment has been received');
-                break;
-            
-            default:
-                # code...
-                break;
-        }
+        return $this->belongsTo(Coupon::class, 'coupon_id');
     }
+
+    public function status()
+    {
+        return $this->hasMany(ShipmentStatus::class, 'shipment_id');
+    }
+
 }

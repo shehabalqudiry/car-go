@@ -19,8 +19,12 @@ class UserResource extends JsonResource
             'phone'             => $this->phone,
             'email'             => $this->email ?? "NA",
             'status'            => $this->status == 0 ? "غير مؤكد" : "تم تأكيد الحساب",
+            'address'           => $this->address ?? "",
+            'address_short'     => $this->address2 ?? "",
+            'address_link'      => $this->address_link ?? "",
             'api_token'         => $this->api_token,
             'otp'               => $this->otp,
+            'user_number'       => $this->number,
         ];
         return $data;
     }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use function App\Helpers\returnData;
+use function App\Helpers\returnSuccessMessage;
 use function App\Helpers\returnValidationError;
 
 class ProfileController extends Controller
@@ -33,7 +34,7 @@ class ProfileController extends Controller
         if ($validator->fails()) {
             return returnValidationError("N/A", $validator);
         }
-        
+
         $user->update($request->only([
             "name",
             "email",
@@ -44,5 +45,15 @@ class ProfileController extends Controller
         ]));
         $data_response = new UserResource($user);
         return returnData('data', $data_response, __('Profile Updated Successful'));
+    }
+
+    public function delete_account(Request $request)
+    {
+        $user = $request->user();
+
+        $user->update([
+            "deleted_at" => now(),
+        ]);
+        return returnSuccessMessage(__('Deleted Successful'));
     }
 }

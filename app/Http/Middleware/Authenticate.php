@@ -15,11 +15,12 @@ class Authenticate extends Middleware
     protected function redirectTo(Request $request): ?string
     {
         if(!$request->expectsJson()) {
-            // if($request->is('/api/v1') || $request->is('/api/v1/*')) {
-            //     return returnError("LOGIN00", __('Unauthorized'));
-            // }
+            // dd($request);
+            if($request->is('admin') || $request->is('admin/*')) {
+                return route('admin.login');
+            }
             // return returnError("LOGIN00", __('Unauthorized'));
-            return route('login');
+            return route('front.auth.login');
         }
         return null;
     }
